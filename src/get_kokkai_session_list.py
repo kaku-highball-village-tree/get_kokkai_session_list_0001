@@ -36,7 +36,6 @@ def fetch_meeting_records(pszStartDate: str, pszEndDate: str) -> list[dict]:
             "endDate": pszEndDate,
             "maximumRecords": iMaximumRecords,
             "recordPosition": iRecordPosition,
-            "recordPacking": "json",
         }
         objResponse = requests.get(pszApiUrl, params=objParams, timeout=30)
         if objResponse.status_code != 200:
@@ -49,10 +48,9 @@ def fetch_meeting_records(pszStartDate: str, pszEndDate: str) -> list[dict]:
         if not isinstance(objListPageRecords, list):
             raise ValueError("JSON構造が想定外です: meetingRecordがリストではありません")
 
-        if not objListPageRecords:
-            break
-
         objListMeetingRecord.extend(objListPageRecords)
+        if len(objListPageRecords) < iMaximumRecords:
+            break
         iRecordPosition += iMaximumRecords
 
     return objListMeetingRecord
