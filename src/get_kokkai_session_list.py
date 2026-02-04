@@ -36,6 +36,7 @@ def fetch_meeting_records(pszStartDate: str, pszEndDate: str) -> list[dict]:
             "endDate": pszEndDate,
             "maximumRecords": iMaximumRecords,
             "recordPosition": iRecordPosition,
+            "recordPacking": "json",
         }
         objResponse = requests.get(pszApiUrl, params=objParams, timeout=30)
         if objResponse.status_code != 200:
