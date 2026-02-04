@@ -27,34 +27,27 @@ def fetch_meeting_records(pszStartDate: str, pszEndDate: str) -> list[dict]:
     pszApiUrl = "https://kokkai.ndl.go.jp/api/meeting_list"
     iMaximumRecords = 100
     iRecordPosition = 1
-    objListMeetingRecord = []
 
-    while True:
-        objParams = {
-            "nameOfMeeting": "本会議",
-            "startDate": pszStartDate,
-            "endDate": pszEndDate,
-            "maximumRecords": iMaximumRecords,
-            "recordPosition": iRecordPosition,
-            "recordPacking": "json",
-        }
-        objResponse = requests.get(pszApiUrl, params=objParams, timeout=30)
-        if objResponse.status_code != 200:
-            raise RuntimeError(f"HTTPステータスが不正です: {objResponse.status_code}")
-        objJson = objResponse.json()
+    objParams = {
+        "nameOfMeeting": "本会議",
+        "startDate": pszStartDate,
+        "endDate": pszEndDate,
+        "maximumRecords": iMaximumRecords,
+        "recordPosition": iRecordPosition,
+        "recordPacking": "json",
+    }
+    objResponse = requests.get(pszApiUrl, params=objParams, timeout=30)
+    if objResponse.status_code != 200:
+        raise RuntimeError(f"HTTPステータスが不正です: {objResponse.status_code}")
+    objJson = objResponse.json()
 
-        if "meetingRecord" not in objJson:
-            raise ValueError("JSON構造が想定外です: meetingRecordが存在しません")
-        objListPageRecords = objJson["meetingRecord"]
-        if not isinstance(objListPageRecords, list):
-            raise ValueError("JSON構造が想定外です: meetingRecordがリストではありません")
+    if "meetingRecord" not in objJson:
+        raise ValueError("JSON構造が想定外です: meetingRecordが存在しません")
+    objListPageRecords = objJson["meetingRecord"]
+    if not isinstance(objListPageRecords, list):
+        raise ValueError("JSON構造が想定外です: meetingRecordがリストではありません")
 
-        objListMeetingRecord.extend(objListPageRecords)
-        if len(objListPageRecords) < iMaximumRecords:
-            break
-        iRecordPosition += iMaximumRecords
-
-    return objListMeetingRecord
+    return objListPageRecords
 
 
 # 会議一覧から回次ごとに開始日と終了日を集約する
